@@ -99,9 +99,7 @@ ALL_STOCKS$Date <- as.POSIXct(ALL_STOCKS$Date)
 #One dimensional plot showing average value of stock prices from Jan 2019 to Nov 2020
 a <- ggplot(ALL_STOCKS, aes(x=Date, y=AvgValue, color=Company)) + geom_line() 
 #Y axis label rename
-a <- a + ylab("Daily Avg Value")
-#split graph by company into different grids, y-axis relative to AvgValue data
-a <- a + facet_grid(Company~., scales="free_y")
+a <- a + ylab("Daily Avg Value") + xlab("")
 #Modifying the text displayed on the right of each individual graph
 a <- a + theme(strip.text.y=element_text(size=18, face='italic'))
 #Adding the title to the graph
@@ -136,19 +134,67 @@ b <- b + ylab("Daily Avg Value")
 #split graph by company into different grids, y-axis relative to AvgValue data
 b <- b + facet_grid(Company~., scales="free_y")
 #Modifying the text displayed on the right of each individual graph
-b <- b + theme(strip.text.y=element_text(size=18, face='italic'))
+b <- b + theme(strip.text.y=element_text(size=12, face='italic'))
 #Adding the title to the graph
-b <- b + ggtitle("The COVID-19 'Affect' On Company Stock Prices")
+b <- b + ggtitle("The COVID-19 'effect' On Company Stock Prices")
 #To center the title
 b <- b + theme(plot.title=element_text(size=18, hjust=0.5))
 #Change the size legend text to output "M" as the million units
 b <- b + scale_size_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6,))
 b
 
+#Extract data for Year on Year histogram plot
+AMZN_YOY <- AMZN_stocks[which(AMZN_stocks$date == "2019-05-01" | AMZN_stocks$date == "2020-05-01"),]
+AAL_YOY <- AAL_stocks[which(AAL_stocks$date == "2019-05-01" | AAL_stocks$date == "2020-05-01"),]
+MAR_YOY <- MAR_stocks[which(MAR_stocks$date == "2019-05-01" | MAR_stocks$date == "2020-05-01"),]
+NFLX_YOY <- NFLX_stocks[which(NFLX_stocks$date == "2019-05-01" | NFLX_stocks$date == "2020-05-01"),]
+TSLA_YOY <- TSLA_stocks[which(TSLA_stocks$date == "2019-05-01" | TSLA_stocks$date == "2020-05-01"),]
 
+#Add company column
+AMZN_YOY$Company <- "AMZN"
+AAL_YOY$Company <- "AAL"
+MAR_YOY$Company <- "MAR"
+NFLX_YOY$Company <- "NFLX"
+TSLA_YOY$Company <- "TSLA"
 
+#Rename columns
+colnames(AMZN_YOY) <- c("Date", "AvgValue", "Company")
+colnames(AAL_YOY) <- c("Date", "AvgValue", "Company")
+colnames(MAR_YOY) <- c("Date", "AvgValue", "Company")
+colnames(NFLX_YOY) <- c("Date", "AvgValue", "Company")
+colnames(TSLA_YOY) <- c("Date", "AvgValue", "Company")
 
+#Create year on year df
+YOY_STOCKS <- data.frame(matrix(ncol = 3))
+colnames(YOY_STOCKS) <- c("Date", "AvgValue", "Company")
+YOY_STOCKS$Date <- as.POSIXct(YOY_STOCKS$Date)
+YOY_STOCKS$AvgValue <- as.numeric(YOY_STOCKS$AvgValue)
+YOY_STOCKS$Company <- as.character(YOY_STOCKS$Company)
+YOY_STOCKS <- YOY_STOCKS[-c(1),]
+str(YOY_STOCKS)
 
+#Bind rows to the new df
+YOY_STOCKS <- rbind(YOY_STOCKS, AMZN_YOY)
+YOY_STOCKS <- rbind(YOY_STOCKS, AAL_YOY)
+YOY_STOCKS <- rbind(YOY_STOCKS, MAR_YOY)
+YOY_STOCKS <- rbind(YOY_STOCKS, NFLX_YOY)
+YOY_STOCKS <- rbind(YOY_STOCKS, TSLA_YOY)
 
+#Confirm date is in correct format
+YOY_STOCKS$Date <- as.character(YOY_STOCKS$Date)
+str(YOY_STOCKS)
 
+#Round the avg value to 2 decimal points
+YOY_STOCKS$AvgValue <- round(YOY_STOCKS$AvgValue,2)
+
+#1-Dimensional plot of year on year
+c <- ggplot(YOY_STOCKS, aes(x=Company, y=AvgValue, label=AvgValue)) + geom_text(size=5, vjust=-1)
+c <- c + geom_bar(stat = "identity", aes(fill=Company))
+c <- c + facet_wrap(Date~., scales="free_x")
+c <- c + ylim(0, 3500)
+c <- c + theme(strip.text.y=element_text(size=12, face='italic'))
+c <- c + ggtitle("The COVID-19 'effect' On Company Stock Prices (Year on Year)")
+c <- c + theme(plot.title=element_text(size=18, hjust=0.5))
+c <- c + ylab("Daily Avg Value") + xlab("")
+c
 
