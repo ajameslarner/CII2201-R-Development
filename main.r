@@ -136,7 +136,7 @@ b <- b + facet_grid(Company~., scales="free_y")
 #Modifying the text displayed on the right of each individual graph
 b <- b + theme(strip.text.y=element_text(size=12, face='italic'))
 #Adding the title to the graph
-b <- b + ggtitle("The COVID-19 'effect' On Company Stock Prices")
+b <- b + ggtitle("The COVID-19 'effect' On Company Stock Prices (Growth)")
 #To center the title
 b <- b + theme(plot.title=element_text(size=18, hjust=0.5))
 #Change the size legend text to output "M" as the million units
@@ -184,17 +184,77 @@ YOY_STOCKS <- rbind(YOY_STOCKS, TSLA_YOY)
 YOY_STOCKS$Date <- as.character(YOY_STOCKS$Date)
 str(YOY_STOCKS)
 
-#Round the avg value to 2 decimal points
+#Round the avg value to 2 decimal points & format order
 YOY_STOCKS$AvgValue <- round(YOY_STOCKS$AvgValue,2)
+YOY_STOCKS <- YOY_STOCKS[order(YOY_STOCKS$AvgValue),]
 
 #1-Dimensional plot of year on year
 c <- ggplot(YOY_STOCKS, aes(x=Company, y=AvgValue, label=AvgValue)) + geom_text(size=5, vjust=-1)
 c <- c + geom_bar(stat = "identity", aes(fill=Company))
 c <- c + facet_wrap(Date~., scales="free_x")
-c <- c + ylim(0, 3500)
-c <- c + theme(strip.text.y=element_text(size=12, face='italic'))
+c <- c + ylim(0, 3000)
 c <- c + ggtitle("The COVID-19 'effect' On Company Stock Prices (Year on Year)")
 c <- c + theme(plot.title=element_text(size=18, hjust=0.5))
 c <- c + ylab("Daily Avg Value") + xlab("")
+c <- c + theme(axis.text.x = element_text(angle=65, vjust=0.3))
 c
 
+#Prep for correlation test
+COR_Avg <- c(STOCKS_VS_OWID$AvgValue)
+COR_Cases <- c(STOCKS_VS_OWID$`Covid-19 Cases`)
+COR_Company <- c(STOCKS_VS_OWID$Company)
+COR_Date <- c(STOCKS_VS_OWID$Date)
+
+#Create the correlation df + formatting
+CORTEST <- data.frame(COR_Date, COR_Avg, COR_Cases, COR_Company)
+CORTEST$Correlation <- ""
+colnames(CORTEST) <- c("Date","AvgValue", "Cases", "Company", "Correlation")
+CORTEST$Date <- as.POSIXct(CORTEST$Date)
+CORTEST$AvgValue <- as.numeric(CORTEST$AvgValue)
+CORTEST$Cases <- as.numeric(CORTEST$Cases)
+CORTEST$Company <- as.character(CORTEST$Company)
+CORTEST$Correlation <- as.character(CORTEST$Correlation)
+
+#Cortests
+AMZN_COR <- CORTEST[which(CORTEST$Company == "AMZN"),]
+cor.test(AMZN_COR$AvgValue, AMZN_COR$Cases)
+AMZN_COR$Correlation <- "0.7992387"
+
+AAL_COR <- CORTEST[which(CORTEST$Company == "AAL"),]
+cor.test(AAL_COR$AvgValue, AAL_COR$Cases)
+AAL_COR$Correlation <- "-0.3346979"
+
+MAR_COR <- CORTEST[which(CORTEST$Company == "MAR"),]
+cor.test(MAR_COR$AvgValue, MAR_COR$Cases)
+MAR_COR$Correlation <- "0.07401873"
+
+NFLX_COR <- CORTEST[which(CORTEST$Company == "NFLX"),]
+cor.test(NFLX_COR$AvgValue, NFLX_COR$Cases)
+NFLX_COR$Correlation <- "0.7293446"
+
+TSLA_COR <- CORTEST[which(CORTEST$Company == "TSLA"),]
+cor.test(TSLA_COR$AvgValue, TSLA_COR$Cases)
+TSLA_COR$Correlation <- "0.9346284"
+
+#Rebind rows with cortest data
+CORTEST <- AMZN_COR
+CORTEST <- rbind(CORTEST, AAL_COR)
+CORTEST <- rbind(CORTEST, MAR_COR)
+CORTEST <- rbind(CORTEST, NFLX_COR)
+CORTEST <- rbind(CORTEST, TSLA_COR)
+
+d <- ggplot(CORTEST, aes(x=Cases, y=AvgValue, color=Company))
+d <- d + geom_area(aes(fill=Company))
+d <- d + facet_wrap(Correlation~., scales="free",)
+d <- d + scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6,))
+d <- d + theme(legend.position = c(0.825, 0.25))
+d <- d + ggtitle("The COVID-19 'effect' On Company Stock Prices (Correlation)")
+d <- d + theme(axis.text.x = element_text(angle=90, vjust=0.4))
+d <- d + ylab("Daily Avg Value") + xlab("Covid-19 Cases")
+d <- d + theme(plot.title=element_text(size=18, hjust=0.5))
+d
+
+intro <- c("The COVID-19 'effect' on Company Stock Prices,","By Anthony James Larner","This project anaylises the effect covid-19 has had on 5 different company stock valuations","Use 'a' to visualise the overall time scope chosen","Use 'b' to visualise the growth of Covid-19 cases, against the stock prices","Use 'c' to see the Year on Year comparison","Use 'd' to visualise the correlation results")
+
+intro
+a
