@@ -2,7 +2,6 @@ library(dplyr)
 library(ggplot2)
 
 #import data sets
-
 AMZN_PP <- read.csv(file = 'AMZN 2020-2015/AMZN-PP.csv', header = TRUE)
 AAL_PP <- read.csv(file = 'AAL 2020-2015/AAL-PP.csv', header = TRUE)
 MAR_PP <- read.csv(file = 'MAR 2020-2015/MAR-PP.csv', header = TRUE)
@@ -46,8 +45,6 @@ TSLA_stocks <- data.frame(date, TSLA_avg)
 #I'm choosing POSIXlt - a common date/time format
 #Using the strptime function, I can appoint which characters within the string
 #represent the relative month, day or year - function is case sensitive
-
-?strptime
 
 date_convert <- function(column, date){
   x <- strptime(column, format = date)
@@ -106,7 +103,6 @@ a <- a + theme(strip.text.y=element_text(size=18, face='italic'))
 a <- a + ggtitle("The COVID-19 'Affect' On Company Stock Prices")
 #To center the title
 a <- a + theme(plot.title=element_text(size=18, hjust=0.5))
-a
 
 #Import 2-dimensional data
 OWID_covid <- read.csv(file = 'owid-covid-data.csv', header = TRUE)
@@ -141,7 +137,6 @@ b <- b + ggtitle("The COVID-19 'effect' On Company Stock Prices (Growth)")
 b <- b + theme(plot.title=element_text(size=18, hjust=0.5))
 #Change the size legend text to output "M" as the million units
 b <- b + scale_size_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6,))
-b
 
 #Extract data for Year on Year histogram plot
 AMZN_YOY <- AMZN_stocks[which(AMZN_stocks$date == "2019-05-01" | AMZN_stocks$date == "2020-05-01"),]
@@ -197,7 +192,6 @@ c <- c + ggtitle("The COVID-19 'effect' On Company Stock Prices (Year on Year)")
 c <- c + theme(plot.title=element_text(size=18, hjust=0.5))
 c <- c + ylab("Daily Avg Value") + xlab("")
 c <- c + theme(axis.text.x = element_text(angle=65, vjust=0.3))
-c
 
 #Prep for correlation test
 COR_Avg <- c(STOCKS_VS_OWID$AvgValue)
@@ -252,9 +246,7 @@ d <- d + ggtitle("The COVID-19 'effect' On Company Stock Prices (Correlation)")
 d <- d + theme(axis.text.x = element_text(angle=90, vjust=0.4))
 d <- d + ylab("Daily Avg Value") + xlab("Covid-19 Cases")
 d <- d + theme(plot.title=element_text(size=18, hjust=0.5))
-d
 
-intro <- c("The COVID-19 'effect' on Company Stock Prices,","By Anthony James Larner","This project anaylises the effect covid-19 has had on 5 different company stock valuations","Use 'a' to visualise the overall time scope chosen","Use 'b' to visualise the growth of Covid-19 cases, against the stock prices","Use 'c' to see the Year on Year comparison","Use 'd' to visualise the correlation results")
-
+intro <- c("The COVID-19 'effect' on Company Stock Prices","By Anthony James Larner","This project anaylises the effect covid-19 has had on 5 different company stock valuations","Use 'a' to visualise the overall time scope chosen","Use 'b' to visualise the growth of Covid-19 cases, against the stock prices","Use 'c' to see the Year on Year comparison","Use 'd' to visualise the correlation results")
 intro
-a
+
