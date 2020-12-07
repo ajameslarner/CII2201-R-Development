@@ -100,7 +100,7 @@ a <- a + ylab("Daily Avg Value") + xlab("")
 #Modifying the text displayed on the right of each individual graph
 a <- a + theme(strip.text.y=element_text(size=18, face='italic'))
 #Adding the title to the graph
-a <- a + ggtitle("The COVID-19 'Affect' On Company Stock Prices")
+a <- a + ggtitle("The COVID-19 'effect' On Company Stock Prices")
 #To center the title
 a <- a + theme(plot.title=element_text(size=18, hjust=0.5))
 
@@ -184,8 +184,7 @@ YOY_STOCKS$AvgValue <- round(YOY_STOCKS$AvgValue,2)
 YOY_STOCKS <- YOY_STOCKS[order(YOY_STOCKS$AvgValue),]
 
 #1-Dimensional plot of year on year
-c <- ggplot(YOY_STOCKS, aes(x=Company, y=AvgValue, label=AvgValue)) + geom_text(size=5, vjust=-1)
-c <- c + geom_bar(stat = "identity", aes(fill=Company))
+c <- ggplot(YOY_STOCKS, aes(x=Company, y=AvgValue, label=AvgValue)) + geom_text(size=5, vjust=-1) + geom_bar(stat = "identity", aes(fill=Company))
 c <- c + facet_wrap(Date~., scales="free_x")
 c <- c + ylim(0, 3000)
 c <- c + ggtitle("The COVID-19 'effect' On Company Stock Prices (Year on Year)")
@@ -247,6 +246,13 @@ d <- d + theme(axis.text.x = element_text(angle=90, vjust=0.4))
 d <- d + ylab("Daily Avg Value") + xlab("Covid-19 Cases")
 d <- d + theme(plot.title=element_text(size=18, hjust=0.5))
 
+library(plotly)
+
 intro <- c("The COVID-19 'effect' on Company Stock Prices","By Anthony James Larner","This project anaylises the effect covid-19 has had on 5 different company stock valuations","Use 'a' to visualise the overall time scope chosen","Use 'b' to visualise the growth of Covid-19 cases, against the stock prices","Use 'c' to see the Year on Year comparison","Use 'd' to visualise the correlation results")
 intro
+
+ggplotly(a)
+ggplotly(b)
+ggplotly(c)
+ggplotly(d)
 
